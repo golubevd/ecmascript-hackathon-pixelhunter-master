@@ -11,7 +11,11 @@
   <include src="img/sprite.svg"></include>
 </div>
 
-<main class="central">
+<main class="viewport"></main>
+
+<!-- Загрузка страницы -->
+<template>
+<section class="central">
   <div id="main" class="central__content">
 
     <section id="intro" class="intro">
@@ -23,7 +27,8 @@
     </section>
 
   </div>
-</main>
+</section>
+</template>
 
 <footer class="footer">
   <a href="https://htmlacademy.ru" class="social-link">
@@ -63,7 +68,8 @@
 
 <!-- Приветствие -->
 <template id="greeting">
-  <section class="greeting central--blur">
+ <secition class="central">
+  <div class="greeting central--blur">
     <img class="greeting__logo" src="img/logo_ph-big.svg" width="201" height="89" alt="Pixel Hunter">
     <div class="greeting__asterisk asterisk"><span class="visually-hidden">Я просто красивая звёздочка</span>*</div>
     <div class="greeting__challenge">
@@ -85,11 +91,13 @@
     <button class="greeting__top top" type="button">
       <img src="img/icon-top.svg" width="71" height="79" alt="Топ игроков">
     </button>
-  </section>
+  </div>
+  </secition>
 </template>
 
 <!-- Правила игры -->
 <template id="rules">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -101,7 +109,7 @@
       </svg>
     </button>
   </header>
-  <section class="rules">
+  <div class="rules">
     <h2 class="rules__title">Правила</h2>
     <ul class="rules__description">
       <li>Угадай 10 раз для каждого изображения фото
@@ -116,11 +124,13 @@
       <input class="rules__input" type="text" placeholder="Ваше Имя">
       <button class="rules__button  continue" type="submit" disabled>Go!</button>
     </form>
+  </div>
   </section>
 </template>
 
 <!-- Игровой экран с двумя изображениями -->
 <template id="game-1">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -138,7 +148,7 @@
       <img src="img/heart__full.svg" class="game__heart" alt="Life" width="31" height="27">
     </div>
   </header>
-  <section class="game">
+  <div class="game">
     <p class="game__task">Угадайте для каждого изображения фото или рисунок?</p>
     <form class="game__content">
       <div class="game__option">
@@ -176,11 +186,13 @@
       <li class="stats__result stats__result--unknown"></li>
       <li class="stats__result stats__result--unknown"></li>
     </ul>
+  </div>
   </section>
 </template>
 
 <!-- Игровой экран с одним изображением -->
 <template id="game-2">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -198,7 +210,7 @@
       <img src="img/heart__full.svg" class="game__heart" alt="Life" width="31" height="27">
     </div>
   </header>
-  <section class="game">
+  <div class="game">
     <p class="game__task">Угадай, фото или рисунок?</p>
     <form class="game__content  game__content--wide">
       <div class="game__option">
@@ -225,11 +237,13 @@
       <li class="stats__result stats__result--fast"></li>
       <li class="stats__result stats__result--unknown"></li>
     </ul>
+  </div>
   </section>
 </template>
 
 <!-- Игровой экран с тремя изображениями -->
 <template id="game-3">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -247,7 +261,7 @@
       <img src="img/heart__full.svg" class="game__heart" alt="Life" width="31" height="27">
     </div>
   </header>
-  <section class="game">
+  <div class="game">
     <p class="game__task">Найдите рисунок среди изображений</p>
     <form class="game__content  game__content--triple">
       <div class="game__option">
@@ -272,11 +286,13 @@
       <li class="stats__result stats__result--fast"></li>
       <li class="stats__result stats__result--unknown"></li>
     </ul>
+  </div>
   </section>
 </template>
 
 <!-- Общая статистика по всем игрокам -->
 <template id="stats">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -288,7 +304,7 @@
       </svg>
     </button>
   </header>
-  <section class="result">
+  <div class="result">
     <h2 class="result__title">Победа!</h2>
     <table class="result__table">
       <tr>
@@ -387,11 +403,13 @@
         <td colspan="5" class="result__total  result__total--final">950</td>
       </tr>
     </table>
+  </div>
   </section>
 </template>
 
 <!-- Общая статистика по всем игрокам. Ещё один вариант -->
 <template id="stats-more">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -407,7 +425,7 @@
       <button class="tab">Топ 50</button>
     </div>
   </header>
-  <section class="result">
+  <div class="result">
     <p class="result__text">У тебя
       <span id="result__score">28 650 очков</span> и
       <span id="result__place">3</span> место в топе</p>
@@ -508,11 +526,13 @@
         <td colspan="5" class="result__total  result__total--final">950</td>
       </tr>
     </table>
+  </div>
   </section>
 </template>
 
 <!-- Статистика по одному игроку -->
 <template id="stats-single">
+ <section class="central">
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -524,7 +544,7 @@
       </svg>
     </button>
   </header>
-  <section class="result">
+  <div class="result">
     <h2 class="result__title result__title--single">950 очков. Неплохо!</h2>
     <table class="result__table result__table--single">
       <tr>
@@ -564,22 +584,26 @@
         <td class="result__total">-100</td>
       </tr>
     </table>
+  </div>
   </section>
 </template>
 
 <!-- Модальное окно с ошибкой -->
 <template id="modal-error">
-  <section class="modal">
+ <section class="central">
+  <div class="modal">
     <div class="modal__inner">
       <h2 class="modal__title">Произошла ошибка!</h2>
       <p class="modal__text modal__text--error">Статус: 404. Пожалуйста, перезагрузите страницу.</p>
     </div>
+  </div>
   </section>
 </template>
 
 <!-- Модальное окно с подтверждением -->
 <template id="modal-confirm">
-  <section class="modal">
+ <section class="central">
+  <div class="modal">
     <form class="modal__inner">
       <button class="modal__close" type="button">
         <span class="visually-hidden">Закрыть</span>
@@ -591,8 +615,9 @@
         <button class="modal__btn">Отмена</button>
       </div>
     </form>
-  </section>
+  </div>
+    </section>
 </template>
-<script src="/js/main.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
