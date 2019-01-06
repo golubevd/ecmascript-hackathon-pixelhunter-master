@@ -1,6 +1,7 @@
 import * as utils from './utils';
 import * as game from './game';
 import rulesScreen from './rules';
+import moreStats from './stats-more';
 
 const template = `\
   <div class="greeting central--blur">
@@ -65,10 +66,15 @@ const template = `\
 const element = utils.getScreensFromTemplate(template);
 
 const greetingContinue = element.querySelector(`.greeting__continue`);
+const playerTop = element.querySelector(`.greeting__top`);
 
 greetingContinue.addEventListener(`click`, () => {
     game.renderScreen(rulesScreen);
 
+});
+
+playerTop.addEventListener(`click`, () => {
+    game.renderScreen(moreStats);
 });
 
 export default element;
