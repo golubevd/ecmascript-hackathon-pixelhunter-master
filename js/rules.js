@@ -1,9 +1,11 @@
 import * as utils from './utils';
 import * as game from './game';
-import gameOneScreen from './game-1';
-import greetingScreen from './greeting';
 
-const template = `\
+import greetingScreen from './greeting';
+import footer from './footer';
+
+
+const tempalteRules = (rules) =>`\
   <header class="header">
     <button class="back">
       <span class="visually-hidden">Вернуться к началу</span>
@@ -18,12 +20,12 @@ const template = `\
   <div class="rules">
     <h2 class="rules__title">Правила</h2>
     <ul class="rules__description">
-      <li>Угадай 10 раз для каждого изображения фото
+      <li>Угадай ${rules.numberOfLevels} раз для каждого изображения фото
         <img class="rules__icon" src="img/icon-photo.png" width="32" height="31" alt="Фото"> или рисунок
         <img class="rules__icon" src="img/icon-paint.png" width="32" height="31" alt="Рисунок"></li>
       <li>Фотографиями или рисунками могут быть оба изображения.</li>
-      <li>На каждую попытку отводится 30 секунд.</li>
-      <li>Ошибиться можно не более 3 раз.</li>
+      <li>На каждую попытку отводится ${rules.timePerLevel} секунд.</li>
+      <li>Ошибиться можно не более ${rules.maxLives} раз.</li>
     </ul>
     <p class="rules__ready">Готовы?</p>
     <form class="rules__form">
@@ -31,51 +33,36 @@ const template = `\
       <button class="rules__button  continue" type="submit" disabled>Go!</button>
     </form>
   </div>
- <footer class="footer">
-  <a href="https://htmlacademy.ru" class="social-link">
-    <span class="visually-hidden">HTML Academy</span>
-    <svg class="icon" width="108" height="37" viewBox="0 0 108 37" fill="#000000">
-      <use xlink:href="img/sprite.svg#logo-htmla"></use>
-    </svg>
-  </a>
-  <span class="footer__made-in">Сделано в <a href="https://htmlacademy.ru" class="footer__link">HTML Academy</a> &copy; 2018</span>
-  <div class="footer__social-links">
-    <a href="https://twitter.com/htmlacademy_ru" class="social-link">
-      <span class="visually-hidden">Твиттер</span>
-      <svg class="icon" width="29" height="29" viewBox="0 0 29 29" fill="#000000">
-        <use xlink:href="img/sprite.svg#icon-tw"></use>
-      </svg>
-    </a>
-    <a href="https://www.instagram.com/htmlacademy/" class="social-link">
-      <span class="visually-hidden">Инстаграм</span>
-      <svg class="icon" width="29" height="29" viewBox="0 0 29 29" fill="#000000">
-        <use xlink:href="img/sprite.svg#icon-ig"></use>
-      </svg>
-    </a>
-    <a href="https://www.facebook.com/htmlacademy" class="social-link">
-      <span class="visually-hidden">Фейсбук</span>
-      <svg class="icon" width="29" height="29" viewBox="0 0 29 29" fill="#000000">
-        <use xlink:href="img/sprite.svg#icon-fb"></use>
-      </svg>
-    </a>
-    <a href="https://vk.com/htmlacademy" class="social-link">
-      <span class="visually-hidden">ВКонтакте</span>
-      <svg class="icon" width="29" height="29" viewBox="0 0 29 29" fill="#000000">
-        <use xlink:href="img/sprite.svg#icon-vk"></use>
-      </svg>
-    </a>
-  </div>
-</footer>`;
+`;
 
-const element = utils.getScreensFromTemplate(template);
+const template =(rules) => `\
+  <header class="header">
+    <button class="back">
+      <span class="visually-hidden">Вернуться к началу</span>
+      <svg class="icon" width="45" height="45" viewBox="0 0 45 45" fill="#000000">
+        <use xlink:href="img/sprite.svg#arrow-left"></use>
+      </svg>
+      <svg class="icon" width="101" height="44" viewBox="0 0 101 44" fill="#000000">
+        <use xlink:href="img/sprite.svg#logo-small"></use>
+      </svg>
+    </button>
+  </header>
+${tempalteRules(rules)}
+ ${footer()}`;
+
+
+export default () => {
+
+const element = utils.getScreensFromTemplate(template(game.rules));
 
 const rulesForm = element.querySelector(`.rules__form`);
 const rulesInput = rulesForm.querySelector(`.rules__input`);
 const rulesButton = rulesForm.querySelector(`.rules__button`);
 const backButton = element.querySelector(`.back`);
 
-rulesForm.addEventListener(`submit`, () => {
-    game.renderScreen(gameOneScreen);
+rulesForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    game.startGame(rulesInput.value);
 });
 
 rulesInput.addEventListener(`input`, () => {
@@ -83,8 +70,10 @@ rulesInput.addEventListener(`input`, () => {
 });
 
 backButton.addEventListener(`click`, () => {
-    game.renderScreen(greetingScreen);
+    game.reset();
 });
 
-export default element;
+return element;
+
+}
 
