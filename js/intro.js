@@ -1,7 +1,7 @@
 import * as utils from './utils';
 import * as game from './game';
 import greetingScreen from './greeting';
-
+import moreStats from './stats-more';
 import footer from './footer';
 
 const template = `\
@@ -35,4 +35,4 @@ playerTop.addEventListener(`click`, () => {
 
 return element;
 
-}
+};

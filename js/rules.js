@@ -1,7 +1,5 @@
 import * as utils from './utils';
 import * as game from './game';
-
-import greetingScreen from './greeting';
 import footer from './footer';
 
 
@@ -70,10 +68,10 @@ rulesInput.addEventListener(`input`, () => {
 });
 
 backButton.addEventListener(`click`, () => {
-    game.reset();
+    game.resetGame();
 });
 
 return element;
 
-}
+};
 

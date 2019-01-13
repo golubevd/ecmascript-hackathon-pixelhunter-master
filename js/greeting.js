@@ -48,4 +48,4 @@ playerTop.addEventListener(`click`, () => {
 
     return element;
 
-}
+};

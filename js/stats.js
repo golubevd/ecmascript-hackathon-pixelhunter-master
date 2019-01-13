@@ -1,6 +1,6 @@
 import * as utils from './utils';
 import * as game from './game';
-import gameStats from './game-stats'
+import gameStats from './game-stats';
 import footer from './footer';
 
 
@@ -10,10 +10,12 @@ const countResults=(results, result) =>{
 
 
 const getPoints = (resluts) =>{
-    const conut = resluts.filter((reslut) =>{
+    const count = resluts.filter((reslut) =>{
         return game.isCorrectResult(reslut);
     }).length;
-}
+
+    return count * game.rules.pointsPerResult;
+};
 
 
 const templateSpeedBonus=(count)=>{
@@ -128,14 +130,8 @@ export default (stats) =>{
 const element = utils.getScreensFromTemplate(template(stats));
 const backButton = element.querySelector(`.back`);
 backButton.addEventListener(`click`, () => {
-    game.reset();
+    game.resetGame();
 });
 
     return element;
-
-}
-
-
-
-
-
+};

@@ -5,7 +5,7 @@ import gameStats from './game-stats'
 import footer from './footer';
 
 
-const templateGameOption(option, index) => `\
+const templateGameOption=(option, index) => `\
  <div class="game__option">
         <img data-src="${option.srx}" alt="Option ${index}" width="304" height="455">
       </div>
@@ -18,7 +18,7 @@ const templateGameOption(option, index) => `\
 
 
 
-const templateGame=(state, options) =`\
+const templateGame=(state, options) =>`\
 <div class="game">
     <p class="game__task">Найдите рисунок среди изображений</p>
     <form class="game__content  game__content--triple">
@@ -30,7 +30,7 @@ const templateGame=(state, options) =`\
   </div>`;
 
 
-const template= (state, options) = `\
+const template= (state, options) => `\
 ${gameHeader(state)}
 ${templateGame(state, options)}
 ${footer()}`;
@@ -56,7 +56,7 @@ Array.from(gameAnswers).forEach((answer) => {
 });
 
 backButton.addEventListener(`click`, () => {
-    game.reset();
+    game.resetGame();
 });
 
 return element;

@@ -4,7 +4,7 @@ import gameHeader from './game-header'
 import gameStats from './game-stats'
 import footer from './footer';
 
-const templateGameOption(option, index) => `\
+const templateGameOption=(option, index) => `\
     <div class="game__option">
         <img data-src="${option.src}" alt="Option ${index}" width="468" height="458">
         <label class="game__answer  game__answer--photo">
@@ -17,7 +17,7 @@ const templateGameOption(option, index) => `\
         </label>
       </div>`;
 
-const templateGame=(state, options) = `\
+const templateGame = (state, options) => `\
   <div class="game">
     <p class="game__task">Угадайте для каждого изображения фото или рисунок?</p>
     <form class="game__content">
@@ -28,7 +28,7 @@ const templateGame=(state, options) = `\
     </ul>
   </div>`;
 
-const template= (state, options) = `\
+const template= (state, options) => `\
 ${gameHeader(state)}
 ${templateGame(state, options)}
 ${footer()}`;
@@ -59,7 +59,7 @@ gameContent.addEventListener(`click`, () => {
 });
 
 backButton.addEventListener(`click`, () => {
-    game.reset();
+    game.resetGame();
 });
 
     return element;

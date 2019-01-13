@@ -1,10 +1,10 @@
-import levels from './levels'
-import gameTask1 from './game-task-1'
-import gameTask2 from './game-task-2'
-import gameTask3 from './game-task-3'
+import levels from './levels';
+import gameTask1 from './game-task-1';
+import gameTask2 from './game-task-2';
+import gameTask3 from './game-task-3';
 
-import greetingScreen from './greeting'
-import statusScreen from './stats'
+import greetingScreen from './greeting';
+import statusScreen from './stats';
 
 
 export const rules = {
@@ -20,6 +20,7 @@ export const rules = {
 };
 
 export const statistic =[
+    {
        name: `Mary`,
     results: [`wrong`, `slow`, `fast`, `correct`, `wrong`, `unknown`, `slow`, `unknown`, `fast`, `unknown`]
   }, {
@@ -41,17 +42,17 @@ export const initialState = Object.freeze({
     results: Object.freeze(new Array(rules.numberOfLevels).fill(`unknown`))
 });
 
-const tasksType = {
+const tasksTypes = {
     'task-1': gameTask1,
     'task-2': gameTask2,
     'task-3': gameTask3
 };
 
 const correctResults = new Set([`slow`, `fast`, `correct`]);
-
+const viewport = document.querySelector(`.viewport`);
 
 export function renderScreen(screen) {
-    viewport.innerHTML = '';
+    viewport.innerHTML = ``;
     viewport.appendChild(screen);
 }
 
@@ -63,7 +64,7 @@ export function renderLevel(state){
     const type = levels[state.level].type;
     const options = levels[state.level].options;
 
-    const screen = tasksType[type](state,options);
+    const screen = tasksTypes[type](state,options);
 
     renderScreen(screen);
 }
@@ -91,8 +92,8 @@ export function startGame(userName = `Unknown`){
     }));
 }
 
-export function resertGame(){
-    renderScreen(greetingScreen);
+export function resetGame(){
+    renderScreen(greetingScreen());
 }
 
 

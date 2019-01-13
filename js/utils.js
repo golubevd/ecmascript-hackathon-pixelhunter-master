@@ -6,17 +6,17 @@ export function getScreensFromTemplate(htmContent) {
     wrapper.insertAdjacentHTML(`afterbegin`, htmContent);
 
     return wrapper;
-};
+}
 
 
-function scaleImage(img, width, hright){
+function scaleImage(img, width, height) {
    const imgHeight = img.naturalHeight;
     const imgWidth = img.naturalWidth;
 
     const ratio = imgWidth / imgHeight;
 
     img.width = ((width / ratio) < height) ? width : height * ratio;
-    img.height = ((width / ratio) < height) ? width / ratio : height
+    img.height = ((width / ratio) < height) ? width / ratio : height;
 }
 
 
