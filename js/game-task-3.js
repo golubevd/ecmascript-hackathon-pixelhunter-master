@@ -7,7 +7,7 @@ import footer from './footer';
 
 const templateGameOption=(option, index) => `\
  <div class="game__option">
-        <img data-src="${option.srx}" alt="Option ${index}" width="304" height="455">
+        <img data-src="${option.srс}" alt="Option ${index}" width="304" height="455">
       </div>
       <div class="game__option  game__option--selected">
         <img src="http://placehold.it/304x455" alt="Option ${index}" width="304" height="455">
