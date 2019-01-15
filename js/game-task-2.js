@@ -1,7 +1,7 @@
 import * as utils from './utils';
 import * as game from './game';
-import gameHeader from './game-header'
-import gameStats from './game-stats'
+import gameHeader from './game-header';
+import gameStats from './game-stats';
 import footer from './footer';
 
 
@@ -42,15 +42,15 @@ const IMG_HEIGHT = 455;
 
 export default (state, options) =>{
 
-const element = utils.getScreensFromTemplate(template);
+const element = utils.getScreensFromTemplate(template(state, options));
 
 const gameContent = element.querySelector(`.game__content`);
 const backButton = element.querySelector(`.back`);
 utils.loadImages(gameContent, IMG_WIDTH,IMG_HEIGHT);
 
-function isAnswered(question) {
+const isAnswered=(question)=> {
     return Array.from(gameContent.elements[question]).some((answer) => answer.checked);
-}
+};
 
 gameContent.addEventListener(`click`, () => {
     if(questions.every((question) => isAnswered(question))) {
@@ -64,4 +64,4 @@ backButton.addEventListener(`click`, () => {
 
 return element;
 
-}
+};

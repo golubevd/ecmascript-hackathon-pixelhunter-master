@@ -38,7 +38,7 @@ const greetingContinue = element.querySelector(`.greeting__continue`);
 const playerTop = element.querySelector(`.greeting__top`);
 
 greetingContinue.addEventListener(`click`, () => {
-    game.renderScreen(rulesScreen);
+    game.renderScreen(rulesScreen());
 
 });
 

@@ -16,7 +16,7 @@ export const rules = {
     speedPenaltyPoint: -50,
     livesBonusPoint: 50,
     maxLives: 3,
-    numberOfLevels : levels.length
+    numberOfLevels: levels.length
 };
 
 export const statistic =[
@@ -70,12 +70,13 @@ export function renderLevel(state){
 }
 
 export function renderNextLevel(state){
-    state.level ++;
+
+    state.level++;
 
     if(state.level < rules.numberOfLevels){
         renderLevel(state);
     }else{
-        state.unshift({
+        statistic.unshift({
             name: state.name,
             results: state.results
         });
@@ -95,6 +96,3 @@ export function startGame(userName = `Unknown`){
 export function resetGame(){
     renderScreen(greetingScreen());
 }
-
-
-

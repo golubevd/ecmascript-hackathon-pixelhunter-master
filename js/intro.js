@@ -26,7 +26,7 @@ const playerTop = element.querySelector(`.intro__top`);
 
 
 introAsterisk.addEventListener(`click`, () => {
-    game.renderScreen(greetingScreen);
+    game.renderScreen(greetingScreen());
 });
 
 playerTop.addEventListener(`click`, () => {
