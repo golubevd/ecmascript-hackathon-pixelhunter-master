@@ -7,13 +7,7 @@ import footer from './footer';
 
 const templateGameOption=(option, index) => `\
  <div class="game__option">
-        <img data-src="${option.srс}" alt="Option ${index}" width="304" height="455">
-      </div>
-      <div class="game__option  game__option--selected">
-        <img src="http://placehold.it/304x455" alt="Option ${index}" width="304" height="455">
-      </div>
-      <div class="game__option">
-        <img src="http://placehold.it/304x455" alt="Option ${index}" width="304" height="455">
+        <img data-src="${option.src}" alt="Option ${index}" width="304" height="455"/>
       </div>`;
 
 
@@ -47,17 +41,27 @@ const element = utils.getScreensFromTemplate(template(state, options));
 const gameContent = element.querySelector(`.game__content`);
 const gameAnswers = gameContent.querySelectorAll(`.game__option`);
 const backButton = element.querySelector(`.back`);
-utils.loadImages(gameContent, IMG_WIDTH,IMG_HEIGHT);
+const gameTimer = element.querySelector(`.game__timer`);
 
-Array.from(gameAnswers).forEach((answer) => {
+
+Array.from(gameAnswers).forEach((answer, index) => {
     answer.addEventListener(`click`, () => {
-        game.renderNextLevel(state);
+
+        const levelTimer = game.rules.timePerLevel - parseInt(gameTimer.textContent, 10);
+        const levelPassed = options[index].answer === `paint`;
+        game.finishLevel(state, levelTimer, levelPassed);
     });
 });
 
 backButton.addEventListener(`click`, () => {
     game.resetGame();
 });
+
+    utils.loadImages(gameContent, IMG_WIDTH,IMG_HEIGHT, () =>{
+        game.startLevel(state, (timerTiks) => {
+            gameTimer.textContent = timerTiks;
+        });
+    });
 
 return element;
 

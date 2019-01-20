@@ -36,7 +36,6 @@ ${gameHeader(state)}
 ${templateGame(state, options)}
 ${footer()}`;
 
-const questions = [`question1`];
 const IMG_WIDTH = 705;
 const IMG_HEIGHT = 455;
 
@@ -46,21 +45,44 @@ const element = utils.getScreensFromTemplate(template(state, options));
 
 const gameContent = element.querySelector(`.game__content`);
 const backButton = element.querySelector(`.back`);
-utils.loadImages(gameContent, IMG_WIDTH,IMG_HEIGHT);
+const gameTimer = element.querySelector(`.game__timer`);
+
+const questions = options.map((option, index) => `question${index + 1}`);
+
+    const getElements = (question) => {
+        return Array.from(gameContent.elements[question]);
+    };
 
 const isAnswered=(question)=> {
-    return Array.from(gameContent.elements[question]).some((answer) => answer.checked);
+    return getElements(question).some((item) => item.checked);
 };
 
 gameContent.addEventListener(`click`, () => {
     if(questions.every((question) => isAnswered(question))) {
-        game.renderNextLevel(state);
+
+        const answers = options.map((option, index) => {
+            return getElements(`question${index + 1}`)
+            .find((item) => item.checked)
+            .value === option.answer;
+        });
+
+    const levelTime = game.rules.timePerLevel - parseInt(gameTimer.textContent, 10);
+    const levelPassed = answers.every((answer) => answer);
+
+        game.finishLevel(state, levelTime, levelPassed);
     }
 });
 
 backButton.addEventListener(`click`, () => {
     game.resetGame();
 });
+
+
+    utils.loadImages(gameContent, IMG_WIDTH,IMG_HEIGHT, () => {
+        game.startLevel(state, (timerTiks) => {
+            gameTimer.textContent = timerTiks;
+        });
+    });
 
 return element;
 

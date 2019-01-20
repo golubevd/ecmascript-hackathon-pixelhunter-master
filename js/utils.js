@@ -20,47 +20,42 @@ function scaleImage(img, width, height) {
 }
 
 
-function loadImage(src, width, height, callback) {
+function loadImage(src, onLoadDone) {
 
-  let imageLoadTimeout = null;
-
-
+  let timeout = null;
+  const LOAD_TIMEOUT = 5000;
   const image = new Image();
 
   image.addEventListener(`load`, () => {
-    clearTimeout(imageLoadTimeout);
+    clearTimeout(timeout);
 
-    scaleImage(image, width, height);
-
-    callback(image);
+    if (typeof onLoadDone === `function`){
+        onLoadDone(image);
+    }
   });
 
-  image.addEventListener(`error`, () => {
-    // console.log(`Unable upload image: ${src}`);
-  });
-
-
-  const LOAD_TIMEOUT = 5000;
-
-  imageLoadTimeout = setTimeout(() => {
+  timeout = setTimeout(() => {
     image.src = ``;
   }, LOAD_TIMEOUT);
-
 
   image.src = src;
 }
 
 
-export function loadImages(parent, width, height) {
+export function loadImages(parent, width, height, onLoadDone) {
 
-  const images = parent.querySelectorAll(`img`);
+  const images = Array.from(parent.querySelectorAll(`img`))
+  .filter((img) => img.hasAttribute(`data-src`));
 
-  Array.from(images).forEach((img) => {
+    let imgsCount = images.length;
 
-    loadImage(img.dataset.src, width, height, (image) => {
-
+  images.forEach((img) => loadImage(img.dataset.src, (image) => {
+        scaleImage(image, width, height);
       image.alt = img.alt;
       img.parentNode.replaceChild(image, img);
-    });
-  });
+
+        if (--imgsCount === 0 && typeof onLoadDone === `function`) {
+            onLoadDone();
+        }
+    }));
 }

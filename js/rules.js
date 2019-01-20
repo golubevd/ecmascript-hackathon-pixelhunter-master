@@ -18,7 +18,7 @@ const tempalteRules = (rules) =>`\
   <div class="rules">
     <h2 class="rules__title">Правила</h2>
     <ul class="rules__description">
-      <li>Угадай ${rules.numberOfLevels} раз для каждого изображения фото
+      <li>Угадай ${rules.levelsCount} раз для каждого изображения фото
         <img class="rules__icon" src="img/icon-photo.png" width="32" height="31" alt="Фото"> или рисунок
         <img class="rules__icon" src="img/icon-paint.png" width="32" height="31" alt="Рисунок"></li>
       <li>Фотографиями или рисунками могут быть оба изображения.</li>
@@ -30,8 +30,7 @@ const tempalteRules = (rules) =>`\
       <input class="rules__input" type="text" placeholder="Ваше Имя">
       <button class="rules__button  continue" type="submit" disabled>Go!</button>
     </form>
-  </div>
-`;
+  </div>`;
 
 const template =(rules) => `\
 ${tempalteRules(rules)}
@@ -49,7 +48,7 @@ const backButton = element.querySelector(`.back`);
 
 rulesForm.addEventListener(`submit`, (evt) => {
     evt.preventDefault();
-    game.startGame(rulesInput.value);
+    game.startGame(game.initialState, rulesInput.value);
 });
 
 rulesInput.addEventListener(`input`, () => {

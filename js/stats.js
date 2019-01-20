@@ -1,87 +1,42 @@
 import * as utils from './utils';
 import * as game from './game';
+import resultTable from './data-results';
 import gameStats from './game-stats';
 import footer from './footer';
 
 
-const countResults=(results, result) =>{
-    return results.filter((item) => item===result).length;
-};
-
-
-const getPoints = (resluts) =>{
-    const count = resluts.filter((reslut) =>{
-        return game.isCorrectResult(reslut);
-    }).length;
-
-    return count * game.rules.pointsPerResult;
-};
-
-
-const templateSpeedBonus=(count)=>{
-    return (count === 0) ? `` : `\
+const templateBonus=(bonus)=>{
+    return (bonus.count === 0) ? `` : `\
     <tr>
-        <td class="result__extra">Бонус за скорость:</td>
-        <td class="result__extra">${count} <span class="stats__result stats__result--fast"></span></td>
-        <td class="result__points">× ${game.rules.speedBonusPoint}</td>
-        <td class="result__total">${count * game.rules.speedBonusPoint}</td>
-      </tr>`;
-};
-
-const templateLivesBonus=(count)=>{
-    return (count === 0) ? `` : `\
-  <tr>
-        <td class="result__extra">Бонус за жизни:</td>
-        <td class="result__extra">${count} <span class="stats__result stats__result--alive"></span></td>
-        <td class="result__points">× ${game.rules.livesBonusPoint}</td>
-        <td class="result__total">${count * game.rules.livesBonusPoint}</td>
-      </tr>`;
-};
-
-
-const templatePenaltyPoint=(count) =>{
-    return (count===0) ? `` : `\
-    <tr>
-        <td class="result__extra">Штраф за медлительность:</td>
-        <td class="result__extra">${count} <span class="stats__result stats__result--slow"></span></td>
-        <td class="result__points">× ${-game.rules.speedPenaltyPoint}</td>
-        <td class="result__total">${count * game.rules.speedPenaltyPoint}</td>
+        <td></td>
+        <td class="result__extra">${bonus.title}:</td>
+        <td class="result__extra">${bonus.count} <span class="stats__result stats__result--${bonus.name}"></span></td>
+        <td class="result__points">× ${bonus.points}</td>
+        <td class="result__total">${bonus.totalPoints}</td>
       </tr>`;
 };
 
 
 const templateTableResults = (index, results) =>{
-    const livesCount = (game.rules.maxLives - countResults(results, `wrong`));
 
     let templateTableStat = ``;
     let templateTableExtra = ``;
 
-    if(livesCount < 0){
+    if(game.getLivesCount(results) < 0){
         templateTableStat = `\
         <td class="result__total"></td>
         <td class="result__total  result__total--final">fail</td>`;
     } else {
-        let totalPoints = getPoints(results);
         templateTableStat = `\
-        <td class="result__points">× ${game.rules.pointsPerResult}</td>
-        <td class="result__total">${totalPoints}</td>`;
+        <td class="result__points">× ${game.rules.points.correct}</td>
+        <td class="result__total">${game.getPoints(results)}</td>`;
 
-
-        const speedBonusCount = countResults(results, `fast`);
-        const speedPenaltyPoints = countResults(results, `slow`);
-
-        totalPoints += livesCount * game.rules.livesBonusPoint +
-            speedBonusCount * game.rules.speedBonusPoint+
-            speedPenaltyPoints * game.rules.speedPenaltyPoint;
-
-        templateTableExtra =`\
-            ${templateSpeedBonus(speedBonusCount)}
-            ${templateLivesBonus(livesCount)}
-            ${templatePenaltyPoint(speedPenaltyPoints)}
-            <tr>
-        <td colspan="5" class="result__total  result__total--final">${totalPoints}</td>
+  templateTableExtra = `\
+      ${game.getExtraPoints(results).map((item) => templateBonus(item)).join(``)}
+      <tr>
+        <td colspan="5" class="result__total  result__total--final">${game.getTotalPoints(results)}</td>
       </tr>`;
-    }
+}
 
 
 return `\
@@ -99,9 +54,10 @@ return `\
 
 const templateResults =(stats) =>`\
 <div class="result">
-    <h1>Победа!</h1>
-    ${stats.map((stat, index) => {
-      return templateTableResults(index + 1, stat.results);
+    <h1>${(stats.lives >= 0) ? `Победа!` : `Fail`}</h1>
+    ${templateTableResults(1, stats.results)}
+    ${resultTable.map((results, index) => {
+        return templateTableResults(index + 2, results);
     }).join(``)}
   </div>`;
 
