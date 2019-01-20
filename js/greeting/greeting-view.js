@@ -1,10 +1,10 @@
-import * as utils from './utils';
-import * as game from './game';
-import rulesScreen from './rules';
-import moreStats from './stats-more';
-import footer from './footer';
+import AbstractView from '../view';
+import footer from '../footer';
 
-const template = `\
+export default class GreetingView extends AbstractView {
+
+    get template() {
+        return `\
   <div class="greeting central--blur">
     <img class="greeting__logo" src="img/logo_ph-big.svg" width="201" height="89" alt="Pixel Hunter">
     <div class="greeting__asterisk asterisk"><span class="visually-hidden">Я просто красивая звёздочка</span>*</div>
@@ -29,23 +29,18 @@ const template = `\
     </button>
   </div>
 ${footer()}`;
+    }
 
-export default () => {
+    bind() {
+        const greetingContinue = this.element.querySelector(`.greeting__continue`);
 
-const element = utils.getScreensFromTemplate(template);
+        greetingContinue.addEventListener(`click`, (evt) =>{
+            evt.preventDefault();
+            this.onContinueButtonClick();
+        });
+    }
 
-const greetingContinue = element.querySelector(`.greeting__continue`);
-const playerTop = element.querySelector(`.greeting__top`);
+    onContinueButtonClick() {
 
-greetingContinue.addEventListener(`click`, () => {
-    game.renderScreen(rulesScreen());
-
-});
-
-playerTop.addEventListener(`click`, () => {
-    game.renderScreen(moreStats);
-});
-
-    return element;
-
-};
+    }
+}

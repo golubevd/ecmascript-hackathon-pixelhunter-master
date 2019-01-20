@@ -1,4 +1,4 @@
-import * as game from './game';
+import {rules}  from '../game/game';
 
 export default (state) => `\
 <header class="header">
@@ -11,9 +11,9 @@ export default (state) => `\
         <use xlink:href="img/sprite.svg#logo-small"></use>
       </svg>
     </button>
-    <div class="game__timer">${game.rules.timePerLevel}</div>
+    <div class="game__timer">${rules.timePerLevel}</div>
     <div class="game__lives">
-        ${new Array(game.rules.maxLives-state.lives)
+        ${new Array(rules.maxLives-state.lives)
         .fill(`<img src="img/heart__empty.svg" class="game__heart" alt=" Missed Life" width="31" height="27">`)
         .join(``)}
         ${new Array(state.lives)

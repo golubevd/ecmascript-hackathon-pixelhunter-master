@@ -1,17 +1,9 @@
+import * as utils from './../utils';
 import levels from './data-levels';
-import gameTask1 from './game-task-1';
-import gameTask2 from './game-task-2';
-import gameTask3 from './game-task-3';
+import ingameLevel from '../level/level';
+import greetingScreen from '../greeting/greeting';
+import statusScreen from '../stats/stats';
 
-import greetingScreen from './greeting';
-import statusScreen from './stats';
-
-
-const tasksTypes = Object.freeze({
-    'task-1': gameTask1,
-    'task-2': gameTask2,
-    'task-3': gameTask3
-});
 
 const extraPoints = {
   fast: `Бонус за скорость:`,
@@ -39,27 +31,50 @@ export const rules = Object.freeze({
 });
 
 
-export const initialState = Object.freeze({
+export const state = Object.freeze({
     level: 0,
     lives: rules.maxLives,
     name: `Unknown`,
-    results: Object.freeze(new Array(rules.numberOfLevels).fill(`unknown`))
+    results: Object.freeze(new Array(rules.levelsCount).fill(`unknown`))
 });
 
 
 export function renderScreen(screen) {
-    const viewport = document.querySelector(`.viewport`);
+    const viewport = document.getElementById(`main`);
 
     viewport.innerHTML = ``;
-    viewport.appendChild(screen);
+    viewport.appendChild(screen.element);
+}
+
+
+export function loadLevel(onLoadComplete) {
+    let count = levels.length;
+
+    levels.forEach((level, index) => {
+        utils.loadImages(level.src, (imgs) => {
+            levels[index].img = imgs;
+
+            count--;
+
+
+        if(!count && typeof onLoadComplete === `function`) {
+            onLoadComplete();
+            }
+        });
+    });
+
 }
 
 
 export function renderLevel(curState){
 
-    const level = levels[curState.level];
+    const levelScreen = ingameLevel(curState, levels[curState.level]);
 
-    renderScreen(tasksTypes[level.task](curState, level.options));
+    renderScreen(levelScreen);
+
+    startLevel(curState, (timerTiks) => {
+        levelScreen.levelTime = timerTiks;
+    });
 }
 
 export function renderNextLevel(curState){
@@ -121,7 +136,7 @@ export function finishLevel(curState, levelTime, levelPassed) {
         results: curState.results.slice()
     });
 
-    newState.results.splice(curState.level, 1, result);
+    newState.results[curState.level] = result;
 
     renderNextLevel(newState);
 }
@@ -173,10 +188,13 @@ export function getExtraPoints(results) {
 
 
 export function startGame(curState, userName){
+
+  loadLevel(() => {
     renderLevel(Object.assign({}, curState, {
-        name: userName,
-        results: curState.results.slice()
+      name: userName,
+      results: curState.results.slice()
     }));
+  });
 }
 
 export function resetGame(){

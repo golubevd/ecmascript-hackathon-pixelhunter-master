@@ -1,61 +1,65 @@
-export function getScreensFromTemplate(htmContent) {
+export function resizeImage(frame, given) {
+    const ratio = given.width / given.height;
 
-    const wrapper = document.createElement(`section`);
+    const actualWidth = ((frame.width / ratio) < frame.height)
+    ? frame.width
+    : frame.height * ratio;
 
-    wrapper.classList.add(`central`);
-    wrapper.insertAdjacentHTML(`afterbegin`, htmContent);
+    const actualHeight = ((frame.width / ratio) < frame.height)
+    ? frame.width * ratio
+    : frame.height;
 
-    return wrapper;
+    return {
+        width: actualWidth,
+        height: actualHeight
+    };
 }
 
 
-function scaleImage(img, width, height) {
-   const imgHeight = img.naturalHeight;
-    const imgWidth = img.naturalWidth;
-
-    const ratio = imgWidth / imgHeight;
-
-    img.width = ((width / ratio) < height) ? width : height * ratio;
-    img.height = ((width / ratio) < height) ? width / ratio : height;
-}
-
-
-function loadImage(src, onLoadDone) {
+export function loadImage(src, onLoadCompleted) {
 
   let timeout = null;
   const LOAD_TIMEOUT = 5000;
-  const image = new Image();
+  const img = new Image();
 
-  image.addEventListener(`load`, () => {
+  img.addEventListener(`load`, () => {
     clearTimeout(timeout);
 
-    if (typeof onLoadDone === `function`){
-        onLoadDone(image);
+    if (typeof onLoadCompleted === `function`){
+        onLoadCompleted(img);
     }
   });
 
+    img.addEventListener('error', () => {
+        clearTimeout(timeout);
+
+        if(typeof onLoadCompleted === `function`) {
+            onLoadCompleted();
+        }
+    });
+
   timeout = setTimeout(() => {
-    image.src = ``;
+    img.src = ``;
   }, LOAD_TIMEOUT);
 
-  image.src = src;
+ img.src = src;
 }
 
 
-export function loadImages(parent, width, height, onLoadDone) {
+export function loadImages(srcArray, onLoadCompleted) {
 
-  const images = Array.from(parent.querySelectorAll(`img`))
-  .filter((img) => img.hasAttribute(`data-src`));
+  const imgs = [];
 
-    let imgsCount = images.length;
+    let imgsCount = srcArray.length;
+    srcArray.forEach((src, index) => {
+        loadImage(src, (img) => {
+            imgs[index] = img;
+            imgsCount--;
 
-  images.forEach((img) => loadImage(img.dataset.src, (image) => {
-        scaleImage(image, width, height);
-      image.alt = img.alt;
-      img.parentNode.replaceChild(image, img);
+             if (!imgsCount && typeof onLoadCompleted === `function`) {
+            onLoadCompleted(imgs);
+          }
+        });
+    });
 
-        if (--imgsCount === 0 && typeof onLoadDone === `function`) {
-            onLoadDone();
-        }
-    }));
 }
