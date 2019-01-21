@@ -1,10 +1,10 @@
 import AbstractView from '../view';
 import {resizeImage} from '../utils';
-import {rules} from '../game/game';
-import header from './level-header';
+import {rules} from '../data/data';
+import header from './game-header';
 import footer from '../footer';
 
-export default class LevelView extends AbstractView {
+export default class GamelView extends AbstractView {
     constructor(state, level) {
         super();
 
@@ -26,17 +26,20 @@ export default class LevelView extends AbstractView {
         return this.level.questions.length;
     }
 
-    _isQuestionAnswerRight() {
+    _getAnswers() {
         return this.level.questions.map((question, index) => {
-          return this._getElements(question)
+            return this._getElements(question)
             .find((item) => item.checked)
-            .value === this.level.options[index];
-        }).every((answer) => answer);
+            .value;
+        });
+
     }
 
-    _isChoosenAnswerRight(optionIndex) {
-        return this.level.options[optionIndex] === this.level.choose;
+    _getChoice(optionIndex) {
+        return this.level.options[optionIndex];
     }
+
+
 
     _getOptionImage(optionIndex) {
         const img = this.level.img[optionIndex];
@@ -93,11 +96,11 @@ export default class LevelView extends AbstractView {
       ${footer()}`;
     }
 
-    get levelTime() {
-        return rules.timePerLevel - parseInt(this.gameTimer.textContent, 10);
+    get gameTime() {
+        return rules.gameTime - parseInt(this.gameTimer.textContent, 10);
     }
 
-    set levelTime(time) {
+    set gameTime(time) {
         this.gameTimer.textContent = time;
     }
 
@@ -106,19 +109,22 @@ export default class LevelView extends AbstractView {
         this.gameTimer = this.element.querySelector(`.game__timer`);
 
         const gameOptions = this.gameContent.querySelectorAll(`.game__option`);
+
         Array.from(gameOptions).forEach((option, optionIndex) => {
+
             const optionImgTag = option.querySelector(`img`);
             const optionImg = this._getOptionImage(optionIndex);
 
             optionImgTag.parentNode.replaceChild(optionImg, optionImgTag);
 
             option.addEventListener(`click`, (evt) => {
+
                 if (this._hasQuestions() && this._isAnswered()) {
-                    this.onLevelFinished(this.state, this.levelTime, this._isQuestionAnswerRight());
+                    this.onAnswered(this.gameTime, this._getAnswers());
                 }
 
                 if (!this._hasQuestions()) {
-                    this.onLevelFinished(this.state, this.levelTime, this._isChoosenAnswerRight(optionIndex));
+                    this.onChosen(this.gameTime, this._getChoice(optionIndex));
                 }
             });
         });
@@ -132,9 +138,13 @@ export default class LevelView extends AbstractView {
     }
 
 
-   onLevelFinished(state, levelTime, isAnswerRight) {
+   onAnswered(time, answers) {
 
    }
+
+    onChosen(time, answer) {
+
+    }
 
     onBackButtonClick() {
 

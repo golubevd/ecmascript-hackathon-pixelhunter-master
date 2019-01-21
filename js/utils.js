@@ -33,8 +33,10 @@ export function loadImage(src, onLoadCompleted) {
     img.addEventListener('error', () => {
         clearTimeout(timeout);
 
+        img.src = ``;
+
         if(typeof onLoadCompleted === `function`) {
-            onLoadCompleted();
+            onLoadCompleted(img);
         }
     });
 
@@ -51,6 +53,7 @@ export function loadImages(srcArray, onLoadCompleted) {
   const imgs = [];
 
     let imgsCount = srcArray.length;
+
     srcArray.forEach((src, index) => {
         loadImage(src, (img) => {
             imgs[index] = img;

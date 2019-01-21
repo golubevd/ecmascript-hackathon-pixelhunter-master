@@ -1,4 +1,9 @@
-export default [
+import * as utils from './../utils';
+
+class Levels{
+    constructor() {
+
+this.levels = [
   {
     type: 0,
     src: [`https://ae01.alicdn.com/kf/HTB1KrnHQpXXXXcaaXXXq6xXFXXXv/Free-Shipping-Youthful-Pleasures-font-b-Pino-b-font-Portrait-font-b-Art-b-font-font.jpg`, `https://ae01.alicdn.com/kf/HTB1VwzZQpXXXXcYXFXXq6xXFXXXq/Free-Shipping-Remember-When-Pino-font-b-Portrait-b-font-Art-Print-World-font-b-Famous.jpg`],
@@ -41,3 +46,40 @@ export default [
     options: [`paint`, `photo`, `paint`]
   }
 ];
+}
+    get count() {
+        return this.levels.length;
+    }
+
+    load() {
+        let count = this.levels.length;
+
+        this.levels.forEach((level, index) => {
+            utils.loadImages(level.src, (imgs) => {
+                this.onProgress((1 - count / this.levels.length) * 100);
+
+                this.levels[index].img = imgs;
+                count--;
+
+                if (!count) {
+                    this.onProgress(100);
+                    this.onLoad(this.levels);
+                }
+            });
+        });
+    }
+
+    getLevel(index) {
+        return this.levels[index];
+    }
+
+    onLoad(levels) {
+
+    }
+
+    onProgress(progress) {
+
+    }
+}
+
+export default new Levels();
