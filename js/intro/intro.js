@@ -1,6 +1,6 @@
 import {renderScreen} from '../data/data';
 import IntroView from './intro-view';
-import Application from '../application';
+
 
 class IntroPresenter {
     constructor() {
@@ -16,4 +16,6 @@ class IntroPresenter {
     }
 
 }
-export default IntroPresenter;
+const instance = new IntroPresenter();
+
+export default () => instance;

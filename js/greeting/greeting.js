@@ -16,5 +16,5 @@ class GreetingPresenter{
         }
     }
 }
-
-export default GreetingPresenter;
+const instance = new GreetingPresenter();
+export default () => instance;

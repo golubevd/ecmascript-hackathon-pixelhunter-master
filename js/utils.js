@@ -16,53 +16,93 @@ export function resizeImage(frame, given) {
 }
 
 
-export function loadImage(src, onLoadCompleted) {
+export function loadImage(src) {
+    return new Promise((resolve, reject) => {
+
 
   let timeout = null;
-  const LOAD_TIMEOUT = 5000;
+  const LOAD_TIMEOUT = 8000;
   const img = new Image();
+
+  img.onload = () => {
+    clearTimeout(timeout);
+      resolve(img);
+ };
+
+    img.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error(`Loading of image [${src}] is aborted with erro`));
+    };
+
+  timeout = setTimeout(() => {
+    img.src = ``;
+      reject(new Error(`Loading timeout of image [${src}] is expired`));
+  }, LOAD_TIMEOUT);
+
+ img.src = src;
+    });
+}
+
+export function loadImages(source) {
+
+  const imgs = [];
+
+    source.forEach((scr) => {
+        imgs.push(loadImage(scr));
+    });
+
+    return Promise.all(imgs);
+
+}
+
+export function _loadImage(src, onLoadCompleted) {
+
+  let timeout = null;
+
+  const img = new Image();
+  const TIMEOUT_DELAY = 5000;
 
   img.addEventListener(`load`, () => {
     clearTimeout(timeout);
 
-    if (typeof onLoadCompleted === `function`){
-        onLoadCompleted(img);
+    if (typeof onLoadCompleted === `function`) {
+      onLoadCompleted(img);
     }
   });
 
-    img.addEventListener('error', () => {
-        clearTimeout(timeout);
+  img.addEventListener(`error`, () => {
+    clearTimeout(timeout);
 
-        img.src = ``;
+    img.src = ``;
 
-        if(typeof onLoadCompleted === `function`) {
-            onLoadCompleted(img);
-        }
-    });
+    if (typeof onLoadCompleted === `function`) {
+      onLoadCompleted(img);
+    }
+  });
 
   timeout = setTimeout(() => {
     img.src = ``;
-  }, LOAD_TIMEOUT);
+  }, TIMEOUT_DELAY);
 
- img.src = src;
+  img.src = src;
 }
 
-
-export function loadImages(srcArray, onLoadCompleted) {
+export function _loadImages(srcArray, onLoadCompleted) {
 
   const imgs = [];
 
-    let imgsCount = srcArray.length;
+  let count = srcArray.length;
 
-    srcArray.forEach((src, index) => {
-        loadImage(src, (img) => {
-            imgs[index] = img;
-            imgsCount--;
+  srcArray.forEach((src, index) => {
 
-             if (!imgsCount && typeof onLoadCompleted === `function`) {
-            onLoadCompleted(imgs);
-          }
-        });
+    _loadImage(src, (img) => {
+
+      imgs[index] = img;
+      count--;
+
+      if (!count && typeof onLoadCompleted === `function`) {
+        onLoadCompleted(imgs);
+      }
     });
-
+  });
 }

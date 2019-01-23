@@ -17,12 +17,18 @@
 }
 
 .intro__asterisk {
-  position: absolute;
-  top: 290px;
-  left: 395px;
-
-  font-size: 172px;
-  line-height: 128px;
+  position: relative;
+  top: 250px;
+  left: 40px;
+  text-align: center;
+   font-size: 172px;
+   line-height: 128px;
+    cursor: pointer;
+    animation: spin;
+    animation-duration: 5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    transform-origin: center;
 }
 
 .intro__motto {
@@ -37,4 +43,13 @@
   position: absolute;
   right: 0;
   top: 0;
+}
+
+@keyframes spin {
+    from {
+        transform:  rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

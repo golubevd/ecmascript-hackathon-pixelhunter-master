@@ -2,25 +2,27 @@ import {renderScreen} from '../data/data';
 import {getLevelResults} from '../data/data';
 import {state as initState} from '../data/data';
 import {rules} from '../data/data';
-import {types} from '../data/data';
-import Levels from '../data/data-levels';
 import GameView from './game-view';
 import Application from '../application';
 
 class GamePresenter {
-    constructor(state = initState) {
-        this.state = state;
+    constructor(useName) {
+        this.data = Application.data;
+
+        this.state = Object.assign({}, initState, {
+            name: useName,
+            results: initState.results.slice()
+        });
+
         this.gameTimer = null;
 
         this._createGameView();
     }
 
     _createGameView() {
-        this.level = Levels.getLevel(this.state.level);
+        this.level = this.data[this.state.level];
 
-        this.view = new GameView(this.state, Object.assign({},
-        this.level,                                                         types[this.level.type]
-        ));
+        this.view = new GameView(this.state, this.level);
     }
 
     _startGame() {
@@ -54,25 +56,31 @@ class GamePresenter {
 
     _nextGame() {
 
-        if ((this.state.lives >= 0) && (this.state.level + 1) < Levels.count) {
+        if ((this.state.lives >= 0) && (this.state.level + 1) < this.data.length) {
             this.state.level++;
 
             this._createGameView();
             this.init();
         } else {
-            Application.showStats(this.state);
+            Application.showStats({name: this.state.name, results: this.state.results});
         }
     }
 
     _isQuestionAnswerRight(answers) {
         return answers.map((answer, index) => {
-            return answer === this.level.options[index];
+            return answer === this.level.answers[index].type;
         }).every((answer) => answer);
     }
 
 
      _isChoosenAnswerRight(answer) {
-        return answer === types[this.level.type].choose;
+
+
+         const isShouldChoosePhoto = this.level.answers.filter((it) => {
+      return it.type === `photo`;
+    }).length === 1;
+
+return answer === ((isShouldChoosePhoto) ? `photo` : `painting`);
     }
 
     init() {
@@ -97,4 +105,4 @@ class GamePresenter {
 
 }
 
-export default GamePresenter;
+export default (args = {name: `Unknown`}) => new GamePresenter(args.name);
