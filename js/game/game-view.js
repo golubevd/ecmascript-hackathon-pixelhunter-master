@@ -4,151 +4,210 @@ import {rules} from '../data/data';
 import header from './game-header';
 import footer from '../footer';
 
-export default class GamelView extends AbstractView {
-    constructor(state, data) {
-        super();
+export default class GameView extends AbstractView {
 
-        this.state= state;
-        this.data = data;
-    }
+  constructor(state, data) {
+    super();
 
-    _getElements(question) {
-        return Array.from(this.gameContent.elements[question]);
-    }
+    this._state = state;
 
-    _isAnswered() {
-        return this.data.answers.every((answer, index) => {
-            return this._getElements(`question${index + 1}`).some((item) => item.checked);
-        });
-    }
+    this._question = data.question;
+    this._answers = data.answers;
+    this._formClass = data.formClass;
+    this._hasAnswers = data.hasAnswers;
 
-    _hasAnswers() {
-        return this.data.hasAnswers;
-    }
-
-    _getAnswers() {
-        return this.data.answers.map((answer, index) => {
-            return this._getElements(`question${index + 1}`)
-            .find((item) => item.checked)
-            .value;
-        });
-
-    }
-
-    _getChoice(optionIndex) {
-        return this.data.answers[optionIndex].type;
-    }
+    this._onAnswerChangeHandler = this._onAnswerChangeHandler.bind(this);
+    this._onOptionClickHandler = this._onOptionClickHandler.bind(this);
+    this._onBackButtonClickHandler = this._onBackButtonClickHandler.bind(this);
+  }
 
 
-
-    _setOptionImage(option, optionIndex) {
-        const imgTag = option.querySelector(`img`);
-        const image = this.data.answers[optionIndex].image;
-        const img = image.img;
-        const frame = {width: image.width, height: image.height};
-
-        const actualSize = resizeImage(frame, {
-            width: img.naturalWidth,
-            height: img.naturalHeight
-        });
-
-        img.width = actualSize.width;
-        img.height = actualSize.height;
-        img.alt = `Option ${optionIndex +1}`;
-
-        imgTag.parentNode.replaceChild(img, imgTag);
-
-    }
-
-    _templateAnswer(index) {
-        return `\
-         <label class="game__answer  game__answer--photo">
-          <input class="visually-hidden" name="question${index}" type="radio" value="photo">
-          <span>Фото</span>
-        </label>
-        <label class="game__answer  game__answer--paint">
-          <input class="visually-hidden" name="question${index}" type="radio" value="paint">
-          <span>Рисунок</span>
-        </label>`;
-    }
-
-    _templateOption(index) {
-        return `\
-        <div class="game__option">
-        <img> ${(this.data.hasAnswers) ? this._templateAnswer(index + 1) : ``}
-       </div>`;
-    }
-
-    get template() {
-        return `\
-        ${header(this.state)}
-           <div class="game">
-            <p class="game__task">${this.data.question}</p>
-            <form class="${this.data.formClass}">
-              ${this.data.answers.map((answer, index) => {
-                return this._templateOption(index);
-              }).join(``)}
-            </form>
-            <div class="stats">
-              <ul class="stats">
-                ${this.state.results.map((result) => {
-                  return `<li class="stats__result stats__result--${result}"></li>`;
-                }).join(``)}
-              </ul>
-            </div>
+  get template() {
+    return `\
+      ${header(this._state)}
+      <div class="game">
+        <p class="game__task">${this._question}</p>
+        <form class="${this._formClass}">
+          ${this._answers.map((answer, index) => {
+            return this._templateOption(index);
+          }).join(``)}
+        </form>
+        <div class="stats">
+          <ul class="stats">
+            ${this._state.results.map((result) => {
+              return `<li class="stats__result stats__result--${result}"></li>`;
+            }).join(``)}
+          </ul>
         </div>
+      </div>
       ${footer()}`;
+  }
+
+  get gameTime() {
+    return parseInt(this._gameTimer.textContent, 10);
+  }
+
+  set gameTime(time) {
+
+    const isWarningTime = (time <= rules.warningTime);
+
+    this._gameTimer.textContent = time;
+    this._gameTimer.classList.toggle(`game__timer--blink`, isWarningTime);
+  }
+
+  _isAnswered() {
+    return this._questions.every((question) => {
+      return question.some((item) => item.checked);
+    });
+  }
+
+  _getAnswers() {
+    return this._questions.map((question) => {
+      return question.find((item) => item.checked).value;
+    });
+  }
+
+  _getChoice(optionIndex) {
+    return this._answers[optionIndex].type;
+  }
+
+  _setOptionImage(option, optionIndex) {
+
+    const image = this._answers[optionIndex].image;
+    const frame = {width: image.width, height: image.height};
+
+    const actualSize = resizeImage(frame, {
+      width: image.tag.naturalWidth,
+      height: image.tag.naturalHeight
+    });
+
+    image.tag.width = actualSize.width;
+    image.tag.height = actualSize.height;
+    image.tag.alt = `Option ${optionIndex + 1}`;
+
+    const tag = option.querySelector(`img`);
+    tag.parentNode.replaceChild(image.tag, tag);
+  }
+
+  _addAnswerChangeHandlers() {
+    for (const question of this._questions) {
+      for (const element of question) {
+        element.addEventListener(`change`, this._onAnswerChangeHandler);
+      }
+    }
+  }
+
+  _removeAnswerChangeHandlers() {
+    for (const question of this._questions) {
+      for (const element of question) {
+        element.removeEventListener(`change`, this._onAnswerChangeHandler);
+      }
+    }
+  }
+
+  _templateAnswer(index) {
+    return `\
+      <label class="game__answer game__answer--photo">
+        <input class="visually-hidden" name="question${index}" type="radio" value="photo">
+        <span>Фото</span>
+      </label>
+      <label class="game__answer game__answer--paint">
+        <input class="visually-hidden" name="question${index}" type="radio" value="painting">
+        <span>Рисунок</span>
+      </label>`;
+  }
+
+  _templateOption(index) {
+    return `\
+      <div class="game__option">
+        <img>
+        ${(this._hasAnswers) ? this._templateAnswer(index + 1) : ``}
+      </div>`;
+  }
+
+  _onAnswerChangeHandler(evt) {
+
+    const name = evt.currentTarget.name;
+    const answers = this._gameContent.elements[name];
+
+    for (const answer of answers) {
+      answer.disabled = true;
+    }
+  }
+
+  _onOptionClickHandler(evt) {
+
+    if (this._hasAnswers && this._isAnswered()) {
+      this.onAnswered(this.gameTime, this._getAnswers());
     }
 
-    get gameTime() {
-        return rules.gameTime - parseInt(this.gameTimer.textContent, 10);
+    if (!this._hasAnswers) {
+
+      const index = Array.from(this._gameOptions).indexOf(evt.currentTarget);
+
+      this.onChosen(this.gameTime, this._getChoice(index));
+    }
+  }
+
+  _onBackButtonClickHandler(evt) {
+    evt.preventDefault();
+    this.onBackButtonClick();
+  }
+
+  remove() {
+
+    if (this._hasAnswers) {
+      this._removeAnswerChangeHandlers();
     }
 
-    set gameTime(time) {
-        this.gameTimer.textContent = time;
+    for (const option of this._gameOptions) {
+      option.removeEventListener(`click`, this._onOptionClickHandler);
     }
 
-    bind() {
-        this.gameContent = this.element.querySelector(`.game__content`);
-        this.gameTimer = this.element.querySelector(`.game__timer`);
+    this._backButton.removeEventListener(`click`, this._onBackButtonClickHandler);
 
-        const gameOptions = this.gameContent.querySelectorAll(`.game__option`);
+    super.remove();
+  }
 
-        Array.from(gameOptions).forEach((option, optionIndex) => {
+  bind() {
 
-            this._setOptionImage(option, optionIndex);
+    this._backButton = this.element.querySelector(`.back`);
+    this._gameTimer = this.element.querySelector(`.game__timer`);
+    this._gameContent = this.element.querySelector(`.game__content`);
+    this._gameOptions = this._gameContent.querySelectorAll(`.game__option`);
 
-            option.addEventListener(`click`, (evt) => {
+    this._questions = this._answers.map((answer, index) => {
+      return Array.from(this._gameContent.elements[`question${index + 1}`] || []);
+    });
 
-                if (this._hasAnswers() && this._isAnswered()) {
-                    this.onAnswered(this.gameTime, this._getAnswers());
-                }
 
-                if (!this._hasAnswers()) {
-                    this.onChosen(this.gameTime, this._getChoice(optionIndex));
-                }
-            });
-        });
+    let optionIndex = 0;
 
-        const backButton = this.element.querySelector(`.back`);
+    for (const option of this._gameOptions) {
 
-        backButton.addEventListener(`click`, (evt) => {
-            evt.preventDefault();
-            this.onBackButtonClick();
-        });
+      const index = optionIndex++;
+
+      this._setOptionImage(option, index);
+
+      if (this._hasAnswers) {
+        this._addAnswerChangeHandlers();
+      }
+
+      option.addEventListener(`click`, this._onOptionClickHandler, true);
     }
 
+    this._backButton.addEventListener(`click`, this._onBackButtonClickHandler);
+  }
 
-   onAnswered(time, answers) {
+  onAnswered(time, answers) {
 
-   }
+  }
 
-    onChosen(time, answer) {
+  onChosen(time, answer) {
 
-    }
+  }
 
-    onBackButtonClick() {
+  onBackButtonClick() {
 
-}
-
+  }
 }

@@ -3,6 +3,12 @@ import footer from '../footer';
 
 export default class GreetingView extends AbstractView {
 
+    constructor(){
+        super();
+
+        this._onContinueButtonClickHandler = this._onContinueButtonClickHandler.bind(this);
+    }
+
     get template() {
         return `\
   <div class="greeting central--blur">
@@ -31,13 +37,20 @@ export default class GreetingView extends AbstractView {
 ${footer()}`;
     }
 
-    bind() {
-        const greetingContinue = this.element.querySelector(`.greeting__continue`);
+    _onContinueButtonClickHandler(evt) {
+        evt.preventDefault();
+        this.onContinueButtonClick();
+    }
 
-        greetingContinue.addEventListener(`click`, (evt) =>{
-            evt.preventDefault();
-            this.onContinueButtonClick();
-        });
+    remove() {
+        this._greetingContinue.removeEventListener('click', this._onContinueButtonClickHandler);
+        super.remove();
+    }
+
+    bind() {
+        this._greetingContinue = this.element.querySelector(`.greeting__continue`);
+
+        this._greetingContinue.addEventListener(`click`, this._onContinueButtonClickHandler);
     }
 
     onContinueButtonClick() {

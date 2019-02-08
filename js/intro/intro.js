@@ -1,21 +1,24 @@
-import {renderScreen} from '../data/data';
+
 import IntroView from './intro-view';
 
 
 class IntroPresenter {
-    constructor() {
-        this.view = new IntroView();
+   constructor() {
+        this._view = new IntroView();
     }
 
-    init() {
-        renderScreen(this.view);
+    get element() {
+        return this._view.element;
+    }
 
-        this.view.onContinueButtonClick = () =>{
-            Application.showGreeting();
-        };
+    destroy() {
+        this._view.remove();
+    }
+
+    show(viewport) {
+       this._view.show(viewport);
     }
 
 }
-const instance = new IntroPresenter();
 
-export default () => instance;
+export default () => new IntroPresenter();

@@ -1,5 +1,4 @@
-import Model from './model';
-import dataAdapter from './data/data-adapter';
+import gameModel from './models/game-model';
 import IntroPresenter from './intro/intro';
 import GreetingPresenter from './greeting/greeting';
 import RulesPresenter from './rules/rules';
@@ -18,22 +17,32 @@ class Application {
 
     constructor() {
 
-        this.showIntro();
+        this.viewport = document.getElementById(`main`);
 
-        this.model = new class extends Model {
-            get urlRead(){
-                return `https://intensive-ecmascript-server-btfgudlkpi.now.sh/pixel-hunter/questions`;
-            }
+        this.presenter = IntroPresenter();
 
-            get urlWrite(){
-                return ``;
-            }
-        }();
+        this.routes = {
+            [PresenterID.GREETING]: GreetingPresenter,
+            [PresenterID.RULES]: RulesPresenter,
+            [PresenterID.GAME]: GamePresenter,
+            [PresenterID.STATS]: StatsPresenter
+        };
 
-        this.model.load(dataAdapter)
-        .then((data) => this._setup(data))
-        .then(() => this._changePresenter(this._parseLocationHash()))
-        .catch(window.console.error);
+
+        this.render = {
+            [PresenterID.GREETING]: this._renderFadeAnimationsScreen,
+            [PresenterID.RULES]: this._renderScreen,
+            [PresenterID.GAME]: this._renderScreen,
+            [PresenterID.STATS]: this._renderScreen
+        };
+
+        window.onhashchange = () => {
+            this._changePresenter(this._parseLocationHash());
+        };
+
+    gameModel.load()
+      .then(() => this._changePresenter(this._parseLocationHash()))
+      .catch(window.console.error);
     }
 
     _parseLocationHash() {
@@ -66,27 +75,44 @@ class Application {
     }
 
     _changePresenter(hash) {
-        this.routes[hash.route](hash.args).init();
+
+        const newPresenter = this.routes[hash.route](hash.args);
+        const renderFunction = this.render[hash.route];
+
+
+        renderFunction(this.presenter, newPresenter, this.viewport);
+
+        this.presenter = newPresenter;
     }
 
-    _setup(data) {
-        this.data =data;
+   _renderScreen(oldPresenter, newPresenter, viewport) {
+       newPresenter.show(viewport);
+       oldPresenter.destroy();
+   }
 
-        this.routes = {
-            [PresenterID.GREETING]: GreetingPresenter,
-            [PresenterID.RULES]: RulesPresenter,
-            [PresenterID.GAME]: GamePresenter,
-            [PresenterID.STATS]:StatsPresenter
+    _renderFadeAnimationsScreen(oldPresenter, newPresenter, viewport) {
+        viewport.classList.add(`main--stack-screens`);
+
+        const onElementAnimationEnd = () => {
+            viewport.classList.remove(`main--animate-screens`);
+            viewport.classList.remove(`main--stack-screens`);
+
+            oldPresenter.element.removeEventListener(`animationend`, onElementAnimationEnd);
+
+            oldPresenter.destroy();
         };
 
-        window.onhashchange = () => {
-            this._changePresenter(this._parseLocationHash());
-        };
+        oldPresenter.element.addEventListener(`animationend`, onElementAnimationEnd);
+
+        newPresenter.show(viewport);
+
+        viewport.classList.add(`main--animate-screens`);
     }
 
-    showIntro() {
-        IntroPresenter().init();
+    init() {
+        this.presenter.show(this.viewport);
     }
+
 
    showGreeting() {
        this._setLocationHash({route: PresenterID.GREETING});

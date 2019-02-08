@@ -5,9 +5,14 @@ import footer from '../footer';
 
 export default class RulesView extends AbstractView {
 
-    _getUserName(input) {
-        return input.value.trim().replace(/[#//]/g, ``);
+    constructor() {
+        super();
+
+        this._onInputChangeHandler = this._onInputChangeHandler.bind(this);
+        this._onContinueButtonClickHandler = this._onContinueButtonClickHandler.bind(this);
+        this._onBackButtonClickHandler = this._onBackButtonClickHandler.bind(this);
     }
+
 
     get template() {
         return `\
@@ -19,7 +24,7 @@ export default class RulesView extends AbstractView {
                 <img class="rules__icon" src="img/icon-photo.png" width="32" height="31" alt="Фото"> или рисунок
                 <img class="rules__icon" src="img/icon-paint.png" width="32" height="31" alt="Рисунок"></li>
               <li>Фотографиями или рисунками могут быть оба изображения.</li>
-              <li>На каждую попытку отводится ${rules.timePerLevel} секунд.</li>
+              <li>На каждую попытку отводится ${rules.gameTime} секунд.</li>
               <li>Ошибиться можно не более ${rules.maxLives} раз.</li>
             </ul>
             <p class="rules__ready">Готовы?</p>
@@ -31,35 +36,49 @@ export default class RulesView extends AbstractView {
         ${footer()}`;
     }
 
+
+       _getUserName() {
+        return this._rulesInput.value.replace(/[#//]/g, ``).trim();
+    }
+
+    _onInputChangeHandler() {
+        this._rulesButton.disabled = (this._getUserName().length === 0);
+    }
+
+    _onContinueButtonClickHandler(evt) {
+        evt.preventDefault();
+
+        this._rulesInput.disabled = true;
+        this._rulesButton.disabled = true;
+
+        this.onContinueButtonClick(this._getUserName());
+    }
+
+    _onBackButtonClickHandler(evt) {
+        evt.preventDefault();
+        this.onBackButtonClick();
+    }
+
+    remove(){
+
+        this._rulesInput.removeEventListener(`input`, this._onInputChangeHandler);
+        this._rulesForm.removeEventListener(`submit`, this._onContinueButtonClickHandler);
+        this._backButton.removeEventListener(`click`, this._onBackButtonClickHandler);
+        super.remove();
+    }
+
     bind() {
-        const backButton = this.element.querySelector(`.back`);
-        const rulesForm = this.element.querySelector(`.rules__form`);
-        const rulesInput = rulesForm.querySelector(`.rules__input`);
-        this.rulesButton = rulesForm.querySelector(`.rules__button`);
+        this._backButton = this.element.querySelector(`.back`);
+         this._rulesForm = this.element.querySelector(`.rules__form`);
+         this._rulesInput = this._rulesForm.querySelector(`.rules__input`);
+        this._rulesButton = this._rulesForm.querySelector(`.rules__button`);
 
 
-        rulesForm.addEventListener(`submit`, (evt) => {
-            evt.preventDefault();
-            rulesInput.disabled = true;
-            this.rulesButton.disabled = true;
-
-            this.onContinueButtonClick(this._getUserName(rulesInput));
-        });
-
-        rulesInput.addEventListener(`input`, () => {
-            this.rulesButton.disabled = (rulesInput.value.length === 0);
-        });
-
-        backButton.addEventListener(`click`, (evt) => {
-            evt.preventDefault();
-            this.onBackButtonClick();
-        });
+      this._rulesInput.addEventListener(`input`, this._onInputChangeHandler);
+        this._rulesForm.addEventListener(`submit`, this._onContinueButtonClickHandler);
+        this._backButton.addEventListener(`click`, this._onBackButtonClickHandler);
     }
 
-
-    setProgress(progress) {
-        this.rulesButton.textContent = `${progress}%`;
-    }
 
     onContinueButtonClick(userName) {
 

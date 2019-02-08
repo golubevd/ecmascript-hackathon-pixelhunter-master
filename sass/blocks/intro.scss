@@ -18,17 +18,17 @@
 
 .intro__asterisk {
   position: relative;
-  top: 250px;
-  left: 40px;
+  top: 325px;
+  left: 30px;
   text-align: center;
    font-size: 172px;
-   line-height: 128px;
+
     cursor: pointer;
     animation: spin;
     animation-duration: 5s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-    transform-origin: center;
+    transform-origin: center -5px;
 }
 
 .intro__motto {

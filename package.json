@@ -36,10 +36,9 @@
   "engines": {
     "node": "8"
   },
-    "babel": {
-  "plugins": [
-    "transform-es2015-modules-commonjs"
-  ]
-}
-
+  "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs"
+    ]
+  }
 }

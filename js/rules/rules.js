@@ -1,26 +1,34 @@
-import {renderScreen} from '../data/data';
 import RulesView from './rules-view';
 import Application from '../application';
 
+
 class RulesPresenter {
+  constructor() {
+    this._view = new RulesView();
+  }
 
-    constructor(){
-    this.view = new RulesView();
-    }
+  get element() {
+    return this._view.element;
+  }
 
-    init() {
-        renderScreen(this.view);
+  destroy() {
+    this._view.onContinueButtonClick = null;
+    this._view.onBackButtonClick = null;
+    this._view.remove();
+  }
 
-        this.view.onContinueButtonClick = (userName) => {
-            Application.showGame({name: userName});
-        };
+  show(viewport) {
 
+    this._view.show(viewport);
 
-        this.view.onBackButtonClick = () => {
-            Application.showGreeting();
-        };
-    }
+    this._view.onContinueButtonClick = (userName) => {
+      Application.showGame({name: userName});
+    };
 
+    this._view.onBackButtonClick = () => {
+      Application.showGreeting();
+    };
+  }
 }
 
 export default () => new RulesPresenter();

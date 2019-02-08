@@ -1,10 +1,8 @@
 import AbstractView from '../view';
 import {rules} from '../data/data';
-import {countResults} from '../data/data';
 import {getPoints} from '../data/data';
 import {getExtraPoints} from '../data/data';
 import {getTotalPoints} from '../data/data';
-import dataResults from '../data/data-results';
 import header from '../header';
 import footer from '../footer';
 
@@ -12,35 +10,51 @@ import footer from '../footer';
 
 export default class StatsView extends AbstractView {
 
-    constructor(name, results) {
+    constructor(data) {
         super();
-        this.name=name;
-        this.results = results;
-        this.stats = [this.results, ...dataResults];
+        this._data = data;
+        this.CURREN_USER_ID = 0;
+
+        this._onBackButtonClickHandler = this._onBackButtonClickHandler.bind(this);
     }
 
-    _isGameFailed(results) {
-        return (rules.maxLives - countResults(results, `wrong`)) < 0;
+
+    get template() {
+        return `\
+        ${header()}
+        <div class="result">
+        <h1>${(this._isGameFailed(this.CURREN_USER_ID)) ? `Fail` : `Победа!` }</h1>
+        ${this._data.map((item, index) => {
+            return this._templateStatsItem(item, index);
+        }).join(``)}
+      </div>
+    ${footer()}`;
+
     }
 
-    _templateBonus(bonus) {
-     return (bonus.count === 0) ? `` : `\
+
+    _isGameFailed(userID) {
+        return (this._data[userID].lives < 0);
+    }
+
+    _templateExtra(extra) {
+     return (extra.count === 0) ? `` : `\
         <tr>
             <td></td>
-            <td class="result__extra">${bonus.title}:</td>
-            <td class="result__extra">${bonus.count} <span class="stats__result stats__result--${bonus.name}"></span></td>
-            <td class="result__points">× ${bonus.points}</td>
-            <td class="result__total">${bonus.totalPoints}</td>
+            <td class="result__extra">${extra.label}</td>
+            <td class="result__extra">${extra.count} <span class="stats__result stats__result--${extra.key}"></span></td>
+            <td class="result__points">× ${extra.points}</td>
+            <td class="result__total">${extra.total}</td>
           </tr>`;
     }
 
 
-   _templateTableResults(index, results) {
+   _templateStatsItem(data, index) {
 
     let templateTableStat = ``;
     let templateTableExtra = ``;
 
-       if (this._isGameFailed(results)) {
+       if (this._isGameFailed(index)) {
 
 
         templateTableStat = `\
@@ -49,22 +63,22 @@ export default class StatsView extends AbstractView {
     } else {
         templateTableStat = `\
         <td class="result__points">× ${rules.points.correct}</td>
-        <td class="result__total">${getPoints(results)}</td>`;
+        <td class="result__total">${getPoints(data.stats)}</td>`;
 
   templateTableExtra = `\
-      ${getExtraPoints(results).map((item) => this._templateBonus(item)).join(``)}
+      ${getExtraPoints(data).map((item) => this._templateExtra(item)).join(``)}
       <tr>
-        <td colspan="5" class="result__total  result__total--final">${getTotalPoints(results)}</td>
+        <td colspan="5" class="result__total  result__total--final">${getTotalPoints(data)}</td>
       </tr>`;
 }
 
     return `\
       <table class="result__table">
         <tr>
-          <td class="result__number">${index}.</td>
+          <td class="result__number">${index + 1}.</td>
           <td colspan="2">
             <ul class="stats">
-              ${results.map((result) => {
+              ${data.stats.map((result) => {
                 return `<li class="stats__result stats__result--${result}"></li>`;
               }).join(``)}
             </ul>
@@ -76,22 +90,23 @@ export default class StatsView extends AbstractView {
 
 
  }
-    get template() {
-        return `\
-        ${header()}
-        <div class="result">
-        <h1>${(this._isGameFailed(this.results)) ? `Fail` : `Победа!` }</h1>
-        ${this.stats.map((results, index) => {
-            return this._templateTableResults(index + 1, results);
-        }).join(``)}
-      </div>
-    ${footer()}`;
 
-    }
+    _onBackButtonClickHandler(evt) {
+    evt.preventDefault();
+    this.onBackButtonClick();
+}
+
+    remove() {
+
+    this._backButton.removeEventListener(`click`, this._onBackButtonClickHandler);
+
+    super.remove();
+}
+
 
     bind() {
-        const backButton = this.element.querySelector(`.back`);
-        backButton.addEventListener(`click`, (evt) => {
+        this._backButton = this.element.querySelector(`.back`);
+        this._backButton.addEventListener(`click`, (evt) => {
             evt.preventDefault();
             this.onBackButtonClick();
         });

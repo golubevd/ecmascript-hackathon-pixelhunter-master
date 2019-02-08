@@ -1,20 +1,28 @@
-import {renderScreen} from '../data/data';
 import GreetingView from './greeting-view';
 import Application from '../application';
 
 
 class GreetingPresenter{
     constructor() {
-        this.view = new GreetingView();
+        this._view = new GreetingView();
     }
 
-    init() {
-        renderScreen(this.view);
+    get element() {
+        return this._view.element;
+    }
 
-        this.view.onContinueButtonClick = () => {
+    destroy() {
+        this._view.onContinueButtonClick = null;
+        this._view.remove();
+    }
+
+    show(viewport) {
+       this._view.show(viewport);
+
+        this._view.onContinueButtonClick = () => {
             Application.showRules();
-        }
+        };
     }
 }
-const instance = new GreetingPresenter();
-export default () => instance;
+
+export default () => new GreetingPresenter();
