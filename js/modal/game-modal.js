@@ -4,12 +4,14 @@ export default class ConfirmGame extends AbstractView {
     constructor() {
         super();
 
-        this._onconfirmFormClickHandler = this._onconfirmFormClickHandler.bind(this);
+        this._onConfirmFormClickHandler = this._onConfirmFormClickHandler.bind(this);
+        this._onCancelConfirmClickHandler = this._onCancelConfirmClickHandler.bind(this);
+        this._onCloseBtnClickHandler = this._onCloseBtnClickHandler.bind(this);
     }
 
     get template() {
         return `\
-    <div class="modal modal--hidden">
+
     <form class="modal__inner">
       <button class="modal__close" type="button">
         <span class="visually-hidden">Закрыть</span>
@@ -20,28 +22,45 @@ export default class ConfirmGame extends AbstractView {
         <button class="modal__btn confirm__button--ok">Ок</button>
         <button class="modal__btn confirm__button--cancel">Отмена</button>
       </div>
-    </form>
-  </div>`;
+    </form>`;
     }
 
 
-    _onconfirmFormClickHandler(evt){
+    _onConfirmFormClickHandler(evt){
         evt.preventDefault();
         this.onConfirm(evt.target.classList.contains(`confirm__button--ok`));
     }
 
+    _onCancelConfirmClickHandler(evt) {
+        evt.preventDefault();
+        this.onCancel(evt.target.classList.contains(`confirm__button--cancel`));
+    }
+
+    _onCloseBtnClickHandler(evt){
+       evt.preventDefault();
+        this.onCancel(evt.target.classList.contains(`modal__close`));
+    }
+
     remove() {
-        this._confirmForm.removeEventListener(`click`, this._onconfirmFormClickHandler);
-        super.remoe();
+        this._confirmForm.removeEventListener(`click`, this._onConfirmFormClickHandler);
+        this._confirmForm.removeEventListener(`click`, this._onCancelConfirmClickHandler);
+        this._closeBtn.removeEventListener(`click`, this._onCloseBtnClickHandler);
+        super.remove();
     }
 
     bind() {
-        this._confirmForm = this.element.querySelector(`.modal__inner`);
+        this._confirmForm = this.element.querySelector(`.modal__button-wrapper`);
+        this._closeBtn = this.element.querySelector(`.modal__inner`);
 
-        this._confirmForm.addEventListener(`click`, this._onconfirmFormClickHandler);
+        this._confirmForm.addEventListener(`click`, this._onConfirmFormClickHandler);
+        this._confirmForm.addEventListener(`click`, this._onCancelConfirmClickHandler);
+        this._closeBtn.addEventListener(`click`, this._onCloseBtnClickHandler);
     }
 
-    onConfirm(result) {
+    onConfirm(result) {}
 
-    }
+    onCancel(result){}
+
+    onCloseBtnClick(result){}
+
 }

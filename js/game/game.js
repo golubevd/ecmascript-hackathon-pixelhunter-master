@@ -5,6 +5,7 @@ import {state as initState} from '../data/data';
 import {rules} from '../data/data';
 import GameView from './game-view';
 import Application from '../application';
+import ModalPresenter from '../modal/game-modal';
 
 
 class GamePresenter {
@@ -21,6 +22,8 @@ class GamePresenter {
 
     this._view = new GameView(this._state, this._level);
 
+    this._modal = new ModalPresenter();
+
     this._onTimeTickHandler = this._onTimeTickHandler.bind(this);
   }
 
@@ -34,6 +37,9 @@ class GamePresenter {
     this._view.onAnswered = null;
     this._view.onChosen = null;
     this._view.onBackButtonClick = null;
+    this._modal.onConfirm = null;
+    this._modal.onCancel =null;
+    this._modal.onCloseBtnClick = null;
     this._view.remove();
   }
 
@@ -54,9 +60,46 @@ class GamePresenter {
     this._view.onBackButtonClick = () => {
 
       clearInterval(this._gameTimer);
-      Application.showGreeting();
+        //this._view.hide();
+        this._modal.show(this._viewport);
+        const section = this._viewport.querySelectorAll(`section`);
+        for(var i=0; i< section.length;i++){
+            for (var x =0; x< section[i].children.length;x++){
+                if(section[i].children[x].classList.contains(`modal__inner`)){
+               section[i].classList.remove(`central`);
+                section[i].classList.add(`modal`);
+            } else {
+               section[i].classList.add(`central`);
+            }
+            }
+        }
 
     };
+
+      this._modal.onConfirm = (result) => {
+
+          if (result) {
+              this._modal.hide();
+              Application.showGreeting();
+            }
+      };
+
+       this._modal.onCancel = (result) => {
+           if (result) {
+              this._modal.hide();
+              this._view.show(this._viewport);
+              this._gameTimer = setInterval(this._onTimeTickHandler, 1000);
+          }
+      };
+
+
+       this._modal.onCloseBtnClick = (result) => {
+           if (result) {
+              this._modal.hide();
+              this._view.show(this._viewport);
+              this._gameTimer = setInterval(this._onTimeTickHandler, 1000);
+          }
+      };
 
     this._startGame();
   }
