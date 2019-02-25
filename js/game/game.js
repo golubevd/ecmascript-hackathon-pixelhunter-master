@@ -63,8 +63,8 @@ class GamePresenter {
         //this._view.hide();
         this._modal.show(this._viewport);
         const section = this._viewport.querySelectorAll(`section`);
-        for(var i=0; i< section.length;i++){
-            for (var x =0; x< section[i].children.length;x++){
+        for(let i=0; i< section.length;i++){
+            for (let x =0; x< section[i].children.length;x++){
                 if(section[i].children[x].classList.contains(`modal__inner`)){
                section[i].classList.remove(`central`);
                 section[i].classList.add(`modal`);

@@ -1,4 +1,4 @@
-export default () =>  `\
+export default () => `\
     <div class="modal modal--hidden">
     <form class="modal__inner">
       <button class="modal__close" type="button">
